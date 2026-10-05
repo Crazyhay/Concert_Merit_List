@@ -1,796 +1,1108 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LIVE TICKET ARCHIVE // 演唱會票券目錄 (測試預覽)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LIVE TICKET ARCHIVE // 演唱會票券目錄 (10筆測試版)</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- 日系襯線體與等寬數字字型 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 圖示 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-<!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Noto Serif TC"', 'Songti TC', 'serif'],
+            mono: ['"Space Mono"', 'monospace'],
+          },
+          colors: {
+            paper: '#f8f7f4',      // 和紙暖灰白底色
+            surface: '#ffffff',    // 表面白底
+            ink: '#1c1b1a',        // 濃墨黑
+            charcoal: '#4a4845',   // 炭灰文字
+            hairline: '#e5e3dc',   // 1px 極細髮絲線
+            accent: '#c0392b',     // 朱紅印章色
+          }
+        }
+      }
+    }
+  </script>
 
-<!-- 日系襯線體與等寬數字字型 -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-
-<!-- FontAwesome 圖示 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-<script>
-tailwind.config = {
-theme: {
-extend: {
-fontFamily: {
-serif: ['"Noto Serif TC"', 'Songti TC', 'serif'],
-mono: ['"Space Mono"', 'monospace'],
-},
-colors: {
-paper: '#f8f7f4', // 和紙暖灰白底色
-surface: '#ffffff', // 表面白底
-ink: '#1c1b1a', // 濃墨黑
-charcoal: '#4a4845', // 炭灰文字
-hairline: '#e5e3dc', // 1px 極細髮絲線
-accent: '#c0392b', // 朱紅印章色
-}
-}
-}
-}
-</script>
-
-<style>
-body {
-background-color: #f8f7f4;
-color: #1c1b1a;
-letter-spacing: 0.02em;
--webkit-font-smoothing: antialiased;
-}
-.editorial-input {
-background: transparent;
-border: 1px solid #d5d3cb;
-border-radius: 0px;
-transition: all 0.2s ease;
-}
-.editorial-input:focus {
-border-color: #1c1b1a;
-outline: none;
-box-shadow: 0 0 0 1px #1c1b1a;
-}
-.scrollbar-thin::-webkit-scrollbar {
-height: 4px;
-width: 4px;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb {
-background: #cccac2;
-}
-</style>
+  <style>
+    body {
+      background-color: #f8f7f4;
+      color: #1c1b1a;
+      letter-spacing: 0.02em;
+      -webkit-font-smoothing: antialiased;
+    }
+    .editorial-input {
+      background: transparent;
+      border: 1px solid #d5d3cb;
+      border-radius: 0px;
+      transition: all 0.2s ease;
+    }
+    .editorial-input:focus {
+      border-color: #1c1b1a;
+      outline: none;
+      box-shadow: 0 0 0 1px #1c1b1a;
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+      height: 4px;
+      width: 4px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: #cccac2;
+    }
+  </style>
 </head>
 <body class="min-h-screen flex flex-col font-serif antialiased">
 
-<!-- 頂部報頭（Masthead） -->
-<header class="border-b border-hairline bg-paper sticky top-0 z-30">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-
-<!-- 標題與風格文字 -->
-<div class="flex items-baseline gap-4">
-<h1 class="text-xl sm:text-2xl font-bold tracking-[0.18em] text-ink uppercase">
-Live Archive
-</h1>
-<div class="hidden md:flex items-center gap-2 text-[11px] tracking-widest text-charcoal/70 border-l border-hairline pl-4 font-mono">
-<span>CATALOG VOL. 01</span>
-<span>/</span>
-<span class="text-accent">[ LOCAL SANDBOX // 本機測試模式 ]</span>
-</div>
-</div>
-
-<!-- 右側動作 -->
-<div class="flex items-center gap-3">
-<!-- 重設預設資料按鈕 -->
-<button onclick="resetToInitialData()" class="editorial-input bg-white px-3 py-1.5 text-xs text-charcoal hover:text-accent hover:border-accent transition font-mono uppercase tracking-wider text-[11px]" title="還原至初始測試資料">
-<i class="fa-solid fa-arrow-rotate-left mr-1"></i>重置資料
-</button>
-
-<button onclick="openModal('add')" class="bg-ink hover:bg-black text-white text-xs font-medium px-4 py-2 tracking-widest uppercase transition flex items-center gap-2">
-<span>+</span>
-<span>NEW ENTRY / 新增</span>
-</button>
-</div>
-</div>
-
-<!-- 雙頁籤切換導覽 -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 flex border-t border-hairline text-xs font-mono tracking-widest">
-<button onclick="switchTab('successTab')" id="tabBtn-successTab" class="py-2.5 px-4 border-b-2 border-ink text-ink font-bold transition flex items-center gap-2">
-<span>ARCHIVE: 搶票成功</span>
-<span id="badge-success" class="text-[10px] text-accent">0</span>
-</button>
-<button onclick="switchTab('requestTab')" id="tabBtn-requestTab" class="py-2.5 px-4 border-b-2 border-transparent text-charcoal/60 hover:text-ink transition flex items-center gap-2">
-<span>REQUESTS: 委託名單</span>
-<span id="badge-request" class="text-[10px] text-charcoal/60">0</span>
-</button>
-</div>
-</header>
-
-<!-- 主操作區 -->
-<main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
-
-<!-- 導言與數據摘要 (Editorial Summary) -->
-<div class="border-b border-hairline pb-4 mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
-<div>
-<p class="text-[11px] font-mono tracking-[0.25em] text-accent uppercase mb-0.5">Summary Index</p>
-<p class="text-xs text-charcoal/80">目前為獨立測試環境，所有新增、修改與刪除均即時儲存於瀏覽器 LocalStorage。</p>
-</div>
-<div class="flex items-center gap-6 font-mono text-xs">
-<div>
-<span class="text-[10px] text-charcoal/60 uppercase tracking-widest block">Confirmed</span>
-<span id="stat-count" class="text-base font-bold text-ink">0</span> <span class="text-[10px] text-charcoal/60">SEATS</span>
-</div>
-<div class="w-px h-6 bg-hairline"></div>
-<div>
-<span class="text-[10px] text-charcoal/60 uppercase tracking-widest block">Total Value</span>
-<span id="stat-amount" class="text-base font-bold text-ink">$`0</span>
-</div>
-<div class="w-px h-6 bg-hairline"></div>
-<div>
-<span class="text-[10px] text-charcoal/60 uppercase tracking-widest block">Clients</span>
-<span id="stat-owners" class="text-base font-bold text-ink">0</span> <span class="text-[10px] text-charcoal/60">PERSONS</span>
-</div>
-</div>
-</div>
-
-<!-- 檢索與多條件篩選工具列 -->
-<div class="flex flex-col sm:flex-row gap-3 mb-6 items-stretch sm:items-center justify-between">
-<div class="relative flex-1 max-w-md">
-<input
-type="text"
-id="searchInput"
-oninput="applyFilters()"
-placeholder="搜尋名稱、委託人、會場、取票序號、電話..."
-class="w-full editorial-input py-2 pl-3 pr-8 text-xs placeholder:text-charcoal/40 bg-white"
-/>
-<i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-xs text-charcoal/40 pointer-events-none"></i>
-</div>
-
-<div class="flex items-center gap-2">
-<select id="platformFilter" onchange="applyFilters()" class="editorial-input py-2 px-3 text-xs bg-white text-charcoal focus:text-ink">
-<option value="">全部售票系統 (ALL)</option>
-<option value="拓元">拓元 tixCraft</option>
-<option value="KKTIX">KKTIX</option>
-<option value="寬宏">寬宏售票</option>
-<option value="IBON">ibon 售票</option>
-</select>
-<button onclick="resetFilters()" class="editorial-input py-2 px-3 text-xs bg-white text-charcoal hover:text-ink hover:border-ink transition uppercase font-mono text-[11px]">
-Reset Filter
-</button>
-</div>
-</div>
-
-<!-- 內容展示區 -->
-<div id="content">
-
-<!-- TAB 1: 代搶成功目錄 (Archive Table) -->
-<section id="successTab" class="block">
-<div class="border border-hairline bg-surface overflow-hidden">
-<div class="overflow-x-auto scrollbar-thin">
-<table class="w-full text-left text-xs border-collapse">
-<thead>
-<tr class="border-b border-hairline bg-paper/60 text-[11px] font-mono tracking-wider text-charcoal/70 uppercase">
-<th class="py-3 px-4 w-12 text-center">NO.</th>
-<th class="py-3 px-4 min-w-[220px]">Event / Title</th>
-<th class="py-3 px-4 min-w-[130px]">Date & Time</th>
-<th class="py-3 px-4 min-w-[140px]">Venue / Provider</th>
-<th class="py-3 px-4 min-w-[120px]">Seat</th>
-<th class="py-3 px-4 text-right min-w-[90px]">Price</th>
-<th class="py-3 px-4 text-center min-w-[90px]">Owner</th>
-<th class="py-3 px-4 min-w-[170px]">Pickup Reference</th>
-<th class="py-3 px-4 min-w-[130px]">Claim Period</th>
-<th class="py-3 px-4 min-w-[100px]">Memo</th>
-<th class="py-3 px-4 text-center w-24">Action</th>
-</tr>
-</thead>
-<tbody id="successTableBody" class="divide-y divide-hairline">
-<!-- 動態注入 -->
-</tbody>
-</table>
-</div>
-</div>
-</section>
-
-<!-- TAB 2: 委託單目錄 (Request Table) -->
-<section id="requestTab" class="hidden">
-<div class="border border-hairline bg-surface overflow-hidden">
-<div class="overflow-x-auto scrollbar-thin">
-<table class="w-full text-left text-xs border-collapse">
-<thead>
-<tr class="border-b border-hairline bg-paper/60 text-[11px] font-mono tracking-wider text-charcoal/70 uppercase">
-<th class="py-3 px-4 w-12 text-center">NO.</th>
-<th class="py-3 px-4 min-w-[200px]">Desired Event</th>
-<th class="py-3 px-4 min-w-[120px]">Date</th>
-<th class="py-3 px-4">Venue & Platform</th>
-<th class="py-3 px-4">Preferred Zone</th>
-<th class="py-3 px-4 text-right">Budget Limit</th>
-<th class="py-3 px-4 text-center">Client</th>
-<th class="py-3 px-4">Notes</th>
-<th class="py-3 px-4 text-center w-24">Action</th>
-</tr>
-</thead>
-<tbody id="requestTableBody" class="divide-y divide-hairline">
-<!-- 動態注入 -->
-</tbody>
-</table>
-</div>
-</div>
-</section>
-
-</div>
-</main>
-
-<!-- 底部版權欄 -->
-<footer class="mt-auto border-t border-hairline py-6 text-center text-[10px] font-mono tracking-widest text-charcoal/50 uppercase">
-Standalone Testing Sandbox // All Operations Stored Locally
-</footer>
-
-<!-- 新增 / 編輯彈窗 Modal -->
-<div id="modal" class="fixed inset-0 bg-ink/40 backdrop-blur-[2px] z-50 hidden flex items-center justify-center p-4">
-<div class="bg-surface border border-hairline w-full max-w-xl shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto scrollbar-thin">
-
-<div class="flex items-baseline justify-between border-b border-hairline pb-3 mb-5">
-<div>
-<span class="text-[10px] font-mono tracking-[0.2em] text-accent uppercase block">Catalog Entry</span>
-<h3 id="modalTitle" class="text-base font-bold text-ink tracking-wide">新增檔案項目</h3>
-</div>
-<button onclick="closeModal()" class="text-charcoal hover:text-ink text-sm">
-<i class="fa-solid fa-xmark"></i>
-</button>
-</div>
-
-<form id="recordForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
-<input type="hidden" id="m_action" value="add" />
-<input type="hidden" id="m_rowId" value="" />
-
-<div>
-<label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Target Directory / 目標分頁 *</label>
-<select id="m_sheetName" class="w-full editorial-input p-2 text-xs bg-white text-ink">
-<option value="委託代搶成功的票">委託代搶成功的票 (Confirmed Archive)</option>
-<option value="委託單">委託單 (Pending Requests)</option>
-</select>
-</div>
-
-<div>
-<label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Event Title / 演出或活動名稱 *</label>
-<input type="text" id="m_title" required class="w-full editorial-input p-2 text-xs bg-white" placeholder="例如：YOASOBI ASIA TOUR 2026-2027" />
-</div>
-
-<div class="grid grid-cols-2 gap-3">
-<div>
-<label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Date & Time / 場次時間</label>
-<input type="text" id="m_date" class="w-full editorial-input p-2 text-xs bg-white font-mono" placeholder="2026/10/09 (五) 19:00" />
-</div>
-<div>
-<label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Venue / 演出地點</label>
-<input type="text" id="m_venue" class="w-full editorial-input p-2 text-xs bg-white" placeholder="臺北大巨蛋" />
-</div>
-</div>
-
-<div class="grid grid-cols-3 gap-3">
-<div>
-<label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Platform / 售票系統</label>
-<input type="text" id="m_platform" class="w-full editorial-input p-2 text-xs bg-white" placeholder="拓元 / KKTIX" />
-</div>
-<div>
-<label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Seat / 座位或需求</label>
-<input type="text" id="m_seat" class="w-full editorial-input p-2 text-xs bg-white font-mono" placeholder="L2看台 10排09號" />
-</div>
-<div>
-<label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Price / 票價</label>
-<input type="text" id="m_price" class="w-full editorial-input p-2 text-xs bg-white font-mono" placeholder="5380" />
-</div>
-</div>
-
-<div class="grid grid-cols-2 gap-3">
-<div>
-<label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Owner / 票券主人 *</label>
-<input type="text" id="m_owner" required class="w-full editorial-input p-2 text-xs bg-white" placeholder="甜甜 / 璇" />
-</div>
-<div>
-<label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Buyer Account / 購票帳號</label>
-<input type="text" id="m_account" class="w-full editorial-input p-2 text-xs bg-white" placeholder="張小姐" />
-</div>
-</div>
-
-<!-- 取票憑證組件 -->
-<div class="border-t border-hairline pt-3">
-<p class="text-[10px] font-mono uppercase tracking-widest text-accent mb-2">Claim Voucher Details / 取票憑證</p>
-<div class="grid grid-cols-3 gap-3">
-<div>
-<label class="block text-[10px] font-mono text-charcoal/70 mb-1">Voucher Code (序號)</label>
-<input type="text" id="m_pickupCode" class="w-full editorial-input p-1.5 text-xs bg-white font-mono" />
-</div>
-<div>
-<label class="block text-[10px] font-mono text-charcoal/70 mb-1">Pickup No. (取票號碼)</label>
-<input type="text" id="m_pickupNo" class="w-full editorial-input p-1.5 text-xs bg-white font-mono" />
-</div>
-<div>
-<label class="block text-[10px] font-mono text-charcoal/70 mb-1">Phone (驗證電話)</label>
-<input type="text" id="m_pickupPhone" class="w-full editorial-input p-1.5 text-xs bg-white font-mono" />
-</div>
-</div>
-</div>
-
-<div class="grid grid-cols-2 gap-3">
-<div>
-<label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Claim Period / 可取票日</label>
-<input type="text" id="m_pickupDate" class="w-full editorial-input p-2 text-xs bg-white font-mono" placeholder="2026-10-04 ~ 10-09" />
-</div>
-<div>
-<label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Editorial Memo / 備註說明</label>
-<input type="text" id="m_memo" class="w-full editorial-input p-2 text-xs bg-white" placeholder="西4門全家取票、連號等" />
-</div>
-</div>
-
-<div class="flex items-center justify-end gap-3 pt-4 border-t border-hairline">
-<button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-mono text-charcoal hover:text-ink uppercase tracking-widest">
-Cancel
-</button>
-<button type="submit" id="modalSubmitBtn" class="bg-ink hover:bg-black text-white px-5 py-2 text-xs font-mono uppercase tracking-widest transition">
-Save Record
-</button>
-</div>
-</form>
-</div>
-</div>
-
-<!-- Toast 提示訊息 -->
-<div id="toast" class="fixed bottom-6 right-6 bg-ink text-white px-4 py-2.5 text-xs font-mono tracking-wider shadow-lg transform translate-y-20 opacity-0 transition-all duration-200 z-50 border border-charcoal/40 flex items-center gap-2">
-<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
-<span id="toastMsg">ACTION CONFIRMED</span>
-</div>
-
-<script>
-/* ==========================================================================
-1. 預設測試資料（精準提取自截圖）
-========================================================================== */
-const DEFAULT_SUCCESS_DATA = [
-{
-rowId: 2,
-seq: 1,
-title: "BIGBANG 2026-2027 WORLD TOUR <X : COSMOS> IN TAIPEI (10/09場次)",
-date: "2026/10/09 (五) 19:00",
-venue: "臺北大巨蛋",
-platform: "拓元",
-account: "",
-seat: "L2看台206區 10排09號",
-price: 2000,
-owner: "甜甜",
-pickupCode: "246832",
-pickupNo: "",
-pickupPhone: "0911223344",
-pickupDate: "2026-10-04 09:00 ~ 2026-10-09 21:00",
-memo: ""
-},
-{
-rowId: 3,
-seq: 2,
-title: "BIGBANG 2026-2027 WORLD TOUR <X : COSMOS> IN TAIPEI (10/10場次)",
-date: "2026/10/10 (六) 18:00",
-venue: "臺北大巨蛋",
-platform: "拓元",
-account: "張",
-seat: "L2看台217區 12排16號",
-price: 5000,
-owner: "甜甜",
-pickupCode: "607990",
-pickupNo: "",
-pickupPhone: "0920121734",
-pickupDate: "",
-memo: ""
-},
-{
-rowId: 4,
-seq: 3,
-title: "Vaundy ASIA ARENA TOUR 2026 'HORD' IN TAIPEI (01/11場次)",
-date: "2026/01/11 (日) 19:00",
-venue: "新北小巨蛋",
-platform: "拓元",
-account: "張",
-seat: "B區31號",
-price: 3800,
-owner: "甜甜",
-pickupCode: "936916",
-pickupNo: "",
-pickupPhone: "",
-pickupDate: "2026-10-25 09:00 ~ 2026-11-01 22:00",
-memo: ""
-},
-{
-rowId: 5,
-seq: 4,
-title: "F.FOREVER 恆星之演·光年全...",
-date: "2026/11/29 (六) 19:00",
-venue: "臺北大巨蛋",
-platform: "寬宏",
-account: "",
-seat: "L2看台216區 4排02號",
-price: 3640,
-owner: "瑄",
-pickupCode: "9755233221",
-pickupNo: "0404017",
-pickupPhone: "",
-pickupDate: "",
-memo: "西4門全家取"
-},
-{
-rowId: 6,
-seq: 5,
-title: "MAMAMOO 2026 WORLD TOUR <AWARD> IN TAIPEI",
-date: "2026/11/29 (日) 15:00",
-venue: "新北小巨蛋",
-platform: "IBON",
-account: "",
-seat: "黃2E區28排 20號-22號",
-price: 3200,
-owner: "小美",
-pickupCode: "2026/11/24 12:00",
-pickupNo: "",
-pickupPhone: "",
-pickupDate: "",
-memo: "020049421"
-},
-{
-rowId: 7,
-seq: 6,
-title: "2026 Asia Artist Awards in Kaohsiung",
-date: "2026/12/05 (六) 17:00",
-venue: "高雄國家體育場",
-platform: "寬宏",
-account: "張小姐",
-seat: "1樓G02區5排 19-22號",
-price: 12300,
-owner: "甜甜(芝)/王",
-pickupCode: "2026/11/30(一)",
-pickupNo: "",
-pickupPhone: "",
-pickupDate: "",
-memo: ""
-},
-{
-rowId: 8,
-seq: 7,
-title: "BOYNEXTDOOR TOUR 'KNOCK ON Vol.2' IN TAIPEI",
-date: "2027/01/08 (五) 18:00",
-venue: "國立體育大學校",
-platform: "拓元",
-account: "張小姐",
-seat: "VIP B區 000758號",
-price: 6800,
-owner: "甜甜",
-pickupCode: "2027/01/03(日)",
-pickupNo: "",
-pickupPhone: "",
-pickupDate: "",
-memo: ""
-},
-{
-rowId: 9,
-seq: 8,
-title: "YOASOBI ASIA TOUR 2026-2027 'SUPER PLANET' IN TAIPEI",
-date: "2027/01/16 (六) 18:00",
-venue: "臺北大巨蛋",
-platform: "拓元",
-account: "",
-seat: "B2特11區 07排01號",
-price: 5380,
-owner: "樂樂 (宗文)",
-pickupCode: "829575",
-pickupNo: "",
-pickupPhone: "0911224858",
-pickupDate: "2027-01-09 09:00 ~ 2027-01-16 22:00",
-memo: ""
-},
-{
-rowId: 10,
-seq: 9,
-title: "Bruno Mars - The Romantic Tour",
-date: "2027/04/02 (五) 18:45",
-venue: "樂天桃園棒球場",
-platform: "拓元",
-account: "張小姐",
-seat: "1樓G03區 16排05/06號",
-price: 11160,
-owner: "協同友Alice",
-pickupCode: "2027/04/27",
-pickupNo: "",
-pickupPhone: "",
-pickupDate: "",
-memo: ""
-}
- ];
-
-const DEFAULT_REQUEST_DATA = [
-{
-rowId: 2,
-seq: 1,
-title: "林宥嘉 演唱會",
-date: "待定",
-venue: "台北小巨蛋",
-platform: "拓元",
-seatDemand: "只求入場 (看台優先)",
-budget: "票面價+1000",
-requester: "KK",
-memo: "連號2張"
-}
- ];
-
-/* ==========================================================================
-2. 資料儲存與 Mock 控制器 (LocalStorage)
-========================================================================== */
-let rawData = { successData: [], requestData: [] };
-let currentTab = 'successTab';
-
-function initData() {
-const storedSuccess = localStorage.getItem('ARCHIVE_TEST_SUCCESS');
-const storedRequest = localStorage.getItem('ARCHIVE_TEST_REQUEST');
-
-rawData.successData = storedSuccess ? JSON.parse(storedSuccess) : [...DEFAULT_SUCCESS_DATA];
-rawData.requestData = storedRequest ? JSON.parse(storedRequest) : [...DEFAULT_REQUEST_DATA];
-
-saveData();
-renderAll();
-}
-
-function saveData() {
-localStorage.setItem('ARCHIVE_TEST_SUCCESS', JSON.stringify(rawData.successData));
-localStorage.setItem('ARCHIVE_TEST_REQUEST', JSON.stringify(rawData.requestData));
-}
-
-function resetToInitialData() {
-if (!confirm("確定要重設所有測試資料，還原為初始範例狀態嗎？")) return;
-rawData.successData = JSON.parse(JSON.stringify(DEFAULT_SUCCESS_DATA));
-rawData.requestData = JSON.parse(JSON.stringify(DEFAULT_REQUEST_DATA));
-saveData();
-renderAll();
-showToast("DATA RESET COMPLETE");
-}
-
-function showToast(msg) {
-const toast = document.getElementById('toast');
-document.getElementById('toastMsg').innerText = msg;
-toast.classList.remove('translate-y-20', 'opacity-0');
-setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2500);
-}
-
-function copyVal(val, label) {
-if (!val) return;
-navigator.clipboard.writeText(val).then(() => showToast(COPIED:${val}`));
-}
-
-/* ==========================================================================
-3. 篩選、計算與畫面渲染
-========================================================================== */
-function renderAll() {
-document.getElementById('badge-success').innerText = rawData.successData.length;
-document.getElementById('badge-request').innerText = rawData.requestData.length;
-
-document.getElementById('stat-count').innerText = rawData.successData.length;
-const total = rawData.successData.reduce((acc, cur) => acc + (Number(cur.price) || 0), 0);
-document.getElementById('stat-amount').innerText = '$`' + total.toLocaleString();
-
-const owners = new Set(rawData.successData.map(i => i.owner).filter(Boolean));
-document.getElementById('stat-owners').innerText = owners.size;
-
-applyFilters();
-}
-
-function applyFilters() {
-const kw = document.getElementById('searchInput').value.trim().toLowerCase();
-const platform = document.getElementById('platformFilter').value;
-
-const filterItem = (item) => {
-const matchesKw = !kw ||
-(item.title && item.title.toLowerCase().includes(kw)) ||
-(item.owner && item.owner.toLowerCase().includes(kw)) ||
-(item.requester && item.requester.toLowerCase().includes(kw)) ||
-(item.venue && item.venue.toLowerCase().includes(kw)) ||
-(item.pickupCode && item.pickupCode.toLowerCase().includes(kw)) ||
-(item.pickupPhone && item.pickupPhone.toLowerCase().includes(kw)) ||
-(item.memo && item.memo.toLowerCase().includes(kw));
-const matchesPlatform = !platform || (item.platform === platform);
-return matchesKw && matchesPlatform;
-};
-
-renderSuccessTable(rawData.successData.filter(filterItem));
-renderRequestTable(rawData.requestData.filter(filterItem));
-}
-
-function resetFilters() {
-document.getElementById('searchInput').value = '';
-document.getElementById('platformFilter').value = '';
-applyFilters();
-}
-
-function renderSuccessTable(data) {
-const tbody = document.getElementById('successTableBody');
-if (data.length === 0) {
-tbody.innerHTML = <tr&gt;&lt;td colspan="11" class="text-center py-12 text-charcoal/50 font-mono text-xs"&gt;NO ENTRIES FOUND IN ARCHIVE&lt;/td&gt;&lt;/tr>;
-return;
-}
-
-tbody.innerHTML = data.map((item, idx) => {
-const paddedIndex = String(idx + 1).padStart(2, '0');
-return &lt;tr class="hover:bg-paper/40 transition"&gt; &lt;td class="py-3 px-4 text-center font-mono text-[11px] text-charcoal/50"&gt;${paddedIndex}</td>
-<td class="py-3 px-4 font-semibold text-ink">
-<div class="line-clamp-2">{item.account ? <span class="text-[10px] font-mono text-charcoal/60"&gt;ACC: ${item.account}</span>: ''} &lt;/td&gt; &lt;td class="py-3 px-4 font-mono text-[11px] text-charcoal/80"&gt;${item.date || '—'}</td>
-<td class="py-3 px-4 text-charcoal">
-<div>{item.platform || 'OTHER'}
-</span>
-</td>
-<td class="py-3 px-4 font-mono text-ink font-medium">{item.price ? 'latex
-' + Number(item.price).toLocaleString() : '—'} &lt;/td&gt; &lt;td class="py-3 px-4 text-center"&gt; &lt;span class="inline-block text-[11px] font-medium border-b border-accent text-accent px-1"&gt; 
-
-{item.owner}
-</span>
-</td>
-<td class="py-3 px-4 font-mono text-[11px]">
-latex
-{item.pickupCode ? ` &lt;div class="flex items-center gap-1.5 text-ink"&gt; &lt;span class="bg-paper border border-hairline px-1.5 py-0.5 select-all"&gt;
-
-{item.pickupCode}</span>
-<button onclick="copyVal('latex
-{item.pickupCode}', '取票碼')" class="text-charcoal/50 hover:text-ink" title="複製序號"&gt; &lt;i class="fa-regular fa-copy text-[10px]"&gt;&lt;/i&gt; &lt;/button&gt; &lt;/div>` : ''} 
-
-{item.pickupPhone ? <div class="text-[10px] text-charcoal/60 mt-0.5"&gt;TEL: ${item.pickupPhone}</div>: ''} &lt;/td&gt; &lt;td class="py-3 px-4 font-mono text-[10px] text-charcoal/70"&gt;${item.pickupDate || '—'}</td>
-<td class="py-3 px-4 text-charcoal/70 text-[11px]">{item.rowId})" class="text-charcoal/60 hover:text-ink underline underline-offset-2">EDIT</button>
-<button onclick="confirmDelete('委託代搶成功的票', ${item.rowId})" class="text-charcoal/40 hover:text-accent underline underline-offset-2"&gt;DEL&lt;/button&gt; &lt;/td&gt; &lt;/tr&gt;;
-}).join('');
-}
-
-function renderRequestTable(data) {
-const tbody = document.getElementById('requestTableBody');
-if (data.length === 0) {
-tbody.innerHTML = <tr&gt;&lt;td colspan="9" class="text-center py-12 text-charcoal/50 font-mono text-xs"&gt;NO COMMISSION ENTRIES&lt;/td&gt;&lt;/tr>;
-return;
-}
-
-tbody.innerHTML = data.map((item, idx) => {
-const paddedIndex = String(idx + 1).padStart(2, '0');
-return &lt;tr class="hover:bg-paper/40 transition"&gt; &lt;td class="py-3 px-4 text-center font-mono text-[11px] text-charcoal/50"&gt;${paddedIndex}</td>
-<td class="py-3 px-4 font-semibold text-ink">{item.date || '—'}</td>
-<td class="py-3 px-4 text-charcoal">
-{item.platform || 'OTHER'}]</span>
-</td>
-<td class="py-3 px-4 font-mono text-ink">{item.budget || '—'}</td>
-<td class="py-3 px-4 text-center">
-<span class="inline-block text-[11px] border-b border-charcoal/40 text-ink px-1">{item.memo || '—'}</td>
-<td class="py-3 px-4 text-center font-mono text-[11px] space-x-2">
-<button onclick="openEditModal('委託單', {item.rowId})" class="text-charcoal/40 hover:text-accent underline underline-offset-2">DEL</button>
-</td>
-</tr>
-`;
-}).join('');
-}
-
-function switchTab(tabId) {
-currentTab = tabId;
-document.getElementById('successTab').classList.toggle('hidden', tabId !== 'successTab');
-document.getElementById('requestTab').classList.toggle('hidden', tabId !== 'requestTab');
-
-const btnSuccess = document.getElementById('tabBtn-successTab');
-const btnRequest = document.getElementById('tabBtn-requestTab');
-
-if (tabId === 'successTab') {
-btnSuccess.className = 'py-2.5 px-4 border-b-2 border-ink text-ink font-bold transition flex items-center gap-2';
-btnRequest.className = 'py-2.5 px-4 border-b-2 border-transparent text-charcoal/60 hover:text-ink transition flex items-center gap-2';
-} else {
-btnRequest.className = 'py-2.5 px-4 border-b-2 border-ink text-ink font-bold transition flex items-center gap-2';
-btnSuccess.className = 'py-2.5 px-4 border-b-2 border-transparent text-charcoal/60 hover:text-ink transition flex items-center gap-2';
-}
-}
-
-/* ==========================================================================
-4. 彈窗操作 (新增、編輯修改、刪除)
-========================================================================== */
-function openModal(mode = 'add') {
-document.getElementById('recordForm').reset();
-document.getElementById('m_action').value = 'add';
-document.getElementById('m_rowId').value = '';
-document.getElementById('modalTitle').innerText = '新增項目至目錄';
-document.getElementById('m_sheetName').disabled = false;
-document.getElementById('m_sheetName').value = currentTab === 'successTab' ? '委託代搶成功的票' : '委託單';
-document.getElementById('modal').classList.remove('hidden');
-}
-
-function openEditModal(sheetName, rowId) {
-const source = sheetName === '委託代搶成功的票' ? rawData.successData : rawData.requestData;
-const item = source.find(x => x.rowId === rowId);
-if (!item) return;
-
-document.getElementById('m_action').value = 'edit';
-document.getElementById('m_rowId').value = rowId;
-document.getElementById('modalTitle').innerText = 編輯項目 (序號 ${item.seq || rowId})`;
-
-const selSheet = document.getElementById('m_sheetName');
-selSheet.value = sheetName;
-selSheet.disabled = true;
-
-document.getElementById('m_title').value = item.title || '';
-document.getElementById('m_date').value = item.date || '';
-document.getElementById('m_venue').value = item.venue || '';
-document.getElementById('m_platform').value = item.platform || '';
-document.getElementById('m_seat').value = item.seat || item.seatDemand || '';
-document.getElementById('m_price').value = item.price || item.budget || '';
-document.getElementById('m_owner').value = item.owner || item.requester || '';
-document.getElementById('m_account').value = item.account || '';
-document.getElementById('m_pickupCode').value = item.pickupCode || '';
-document.getElementById('m_pickupNo').value = item.pickupNo || '';
-document.getElementById('m_pickupPhone').value = item.pickupPhone || '';
-document.getElementById('m_pickupDate').value = item.pickupDate || '';
-document.getElementById('m_memo').value = item.memo || '';
-
-document.getElementById('modal').classList.remove('hidden');
-}
-
-function closeModal() {
-document.getElementById('modal').classList.add('hidden');
-}
-
-function handleFormSubmit(e) {
-e.preventDefault();
-const action = document.getElementById('m_action').value;
-const sheetName = document.getElementById('m_sheetName').value;
-const rowId = document.getElementById('m_rowId').value;
-
-const itemData = {
-title: document.getElementById('m_title').value,
-date: document.getElementById('m_date').value,
-venue: document.getElementById('m_venue').value,
-platform: document.getElementById('m_platform').value,
-seat: document.getElementById('m_seat').value,
-seatDemand: document.getElementById('m_seat').value,
-price: document.getElementById('m_price').value,
-budget: document.getElementById('m_price').value,
-owner: document.getElementById('m_owner').value,
-requester: document.getElementById('m_owner').value,
-account: document.getElementById('m_account').value,
-pickupCode: document.getElementById('m_pickupCode').value,
-pickupNo: document.getElementById('m_pickupNo').value,
-pickupPhone: document.getElementById('m_pickupPhone').value,
-pickupDate: document.getElementById('m_pickupDate').value,
-memo: document.getElementById('m_memo').value
-};
-
-if (action === 'add') {
-const targetList = sheetName === '委託代搶成功的票' ? rawData.successData : rawData.requestData;
-const newRowId = Date.now();
-itemData.rowId = newRowId;
-itemData.seq = targetList.length + 1;
-targetList.unshift(itemData);
-showToast('RECORD ADDED (LOCAL)');
-} else {
-const targetList = sheetName === '委託代搶成功的票' ? rawData.successData : rawData.requestData;
-const index = targetList.findIndex(x => x.rowId === Number(rowId));
-if (index !== -1) {
-targetList[index] = { ...targetList[index], ...itemData };
-showToast('RECORD UPDATED (LOCAL)');
-}
-}
-
-saveData();
-closeModal();
-renderAll();
-}
-
-function confirmDelete(sheetName, rowId) {
-if (!confirm(確定要自「${sheetName}」移除此筆測試項目？`)) return;
-if (sheetName === '委託代搶成功的票') {
-rawData.successData = rawData.successData.filter(x => x.rowId !== rowId);
-} else {
-rawData.requestData = rawData.requestData.filter(x => x.rowId !== rowId);
-}
-saveData();
-renderAll();
-showToast('ENTRY DELETED (LOCAL)');
-}
-
-// 啟動載入
-window.addEventListener('DOMContentLoaded', initData);
-</script>
+  <!-- 頂部報頭（Masthead） -->
+  <header class="border-b border-hairline bg-paper sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+      
+      <!-- 標題與風格文字 -->
+      <div class="flex items-baseline gap-4">
+        <h1 class="text-xl sm:text-2xl font-bold tracking-[0.18em] text-ink uppercase">
+          Live Archive
+        </h1>
+        <div class="hidden md:flex items-center gap-2 text-[11px] tracking-widest text-charcoal/70 border-l border-hairline pl-4 font-mono">
+          <span>CATALOG VOL. 01</span>
+          <span>/</span>
+          <span class="text-accent">[ 10 ENTRIES PRELOADED ]</span>
+        </div>
+      </div>
+
+      <!-- 右側動作按鈕區 -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- 平台管理按鈕 -->
+        <button onclick="openPlatformModal()" class="editorial-input bg-white px-2.5 sm:px-3 py-1.5 text-xs text-charcoal hover:text-ink hover:border-ink transition font-mono uppercase tracking-wider text-[11px] flex items-center gap-1.5" title="自訂售票系統清單">
+          <i class="fa-solid fa-tags text-[10px]"></i>
+          <span>平台管理</span>
+        </button>
+
+        <!-- 重設為預設 10 筆資料 -->
+        <button onclick="resetToInitialData()" class="editorial-input bg-white px-2.5 sm:px-3 py-1.5 text-xs text-charcoal hover:text-accent hover:border-accent transition font-mono uppercase tracking-wider text-[11px]" title="還原至 10 筆預設測試資料">
+          <i class="fa-solid fa-arrow-rotate-left mr-1"></i>重置10筆
+        </button>
+
+        <!-- 新增資料 -->
+        <button onclick="openModal('add')" class="bg-ink hover:bg-black text-white text-xs font-medium px-3 sm:px-4 py-2 tracking-widest uppercase transition flex items-center gap-1.5">
+          <span>+</span>
+          <span>新增項目</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 雙頁籤切換導覽 -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex border-t border-hairline text-xs font-mono tracking-widest">
+      <button onclick="switchTab('successTab')" id="tabBtn-successTab" class="py-2.5 px-4 border-b-2 border-ink text-ink font-bold transition flex items-center gap-2">
+        <span>ARCHIVE: 搶票成功</span>
+        <span id="badge-success" class="text-[10px] text-accent">0</span>
+      </button>
+      <button onclick="switchTab('requestTab')" id="tabBtn-requestTab" class="py-2.5 px-4 border-b-2 border-transparent text-charcoal/60 hover:text-ink transition flex items-center gap-2">
+        <span>REQUESTS: 待搶委託</span>
+        <span id="badge-request" class="text-[10px] text-charcoal/60">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 主操作區 -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+
+    <!-- 導言與數據摘要 (Editorial Summary) -->
+    <div class="border-b border-hairline pb-4 mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <p class="text-[11px] font-mono tracking-[0.25em] text-accent uppercase mb-0.5">Summary Index</p>
+        <p class="text-xs text-charcoal/80">已預載 10 筆測試票券明細與委託單，支援即時關鍵字查詢、平台篩選、複製與彈窗修改。</p>
+      </div>
+      <div class="flex items-center gap-6 font-mono text-xs">
+        <div>
+          <span class="text-[10px] text-charcoal/60 uppercase tracking-widest block">Confirmed</span>
+          <span id="stat-count" class="text-base font-bold text-ink">0</span> <span class="text-[10px] text-charcoal/60">SEATS</span>
+        </div>
+        <div class="w-px h-6 bg-hairline"></div>
+        <div>
+          <span class="text-[10px] text-charcoal/60 uppercase tracking-widest block">Total Value</span>
+          <span id="stat-amount" class="text-base font-bold text-ink">$0</span>
+        </div>
+        <div class="w-px h-6 bg-hairline"></div>
+        <div>
+          <span class="text-[10px] text-charcoal/60 uppercase tracking-widest block">Clients</span>
+          <span id="stat-owners" class="text-base font-bold text-ink">0</span> <span class="text-[10px] text-charcoal/60">PERSONS</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 檢索與多條件篩選工具列 -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-6 items-stretch sm:items-center justify-between">
+      <div class="relative flex-1 max-w-md">
+        <input 
+          type="text" 
+          id="searchInput" 
+          oninput="applyFilters()" 
+          placeholder="搜尋演出名稱、委託人、地點、取票序號、電話..." 
+          class="w-full editorial-input py-2 pl-3 pr-8 text-xs placeholder:text-charcoal/40 bg-white"
+        />
+        <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-xs text-charcoal/40 pointer-events-none"></i>
+      </div>
+
+      <!-- 平台即時篩選下拉選單 -->
+      <div class="flex items-center gap-2">
+        <select id="platformFilter" onchange="applyFilters()" class="editorial-input py-2 px-3 text-xs bg-white text-charcoal focus:text-ink">
+          <!-- JS 動態生成選項 -->
+        </select>
+        <button onclick="resetFilters()" class="editorial-input py-2 px-3 text-xs bg-white text-charcoal hover:text-ink hover:border-ink transition uppercase font-mono text-[11px]">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- 內容展示區 -->
+    <div id="content">
+      
+      <!-- TAB 1: 代搶成功目錄 (Archive Table) -->
+      <section id="successTab" class="block">
+        <div class="border border-hairline bg-surface overflow-hidden">
+          <div class="overflow-x-auto scrollbar-thin">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-hairline bg-paper/60 text-[11px] font-mono tracking-wider text-charcoal/70 uppercase">
+                  <th class="py-3 px-4 w-12 text-center">NO.</th>
+                  <th class="py-3 px-4 min-w-[220px]">Event / Title</th>
+                  <th class="py-3 px-4 min-w-[130px]">Date & Time</th>
+                  <th class="py-3 px-4 min-w-[140px]">Venue / Provider</th>
+                  <th class="py-3 px-4 min-w-[120px]">Seat</th>
+                  <th class="py-3 px-4 text-right min-w-[90px]">Price</th>
+                  <th class="py-3 px-4 text-center min-w-[90px]">Owner</th>
+                  <th class="py-3 px-4 min-w-[170px]">Pickup Reference</th>
+                  <th class="py-3 px-4 min-w-[130px]">Claim Period</th>
+                  <th class="py-3 px-4 min-w-[100px]">Memo</th>
+                  <th class="py-3 px-4 text-center w-24">Action</th>
+                </tr>
+              </thead>
+              <tbody id="successTableBody" class="divide-y divide-hairline">
+                <!-- 動態注入 10 筆成功資料 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: 委託單目錄 (Request Table) -->
+      <section id="requestTab" class="hidden">
+        <div class="border border-hairline bg-surface overflow-hidden">
+          <div class="overflow-x-auto scrollbar-thin">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-hairline bg-paper/60 text-[11px] font-mono tracking-wider text-charcoal/70 uppercase">
+                  <th class="py-3 px-4 w-12 text-center">NO.</th>
+                  <th class="py-3 px-4 min-w-[200px]">Desired Event</th>
+                  <th class="py-3 px-4 min-w-[120px]">Date</th>
+                  <th class="py-3 px-4">Venue & Platform</th>
+                  <th class="py-3 px-4">Preferred Zone</th>
+                  <th class="py-3 px-4 text-right">Budget Limit</th>
+                  <th class="py-3 px-4 text-center">Client</th>
+                  <th class="py-3 px-4">Notes</th>
+                  <th class="py-3 px-4 text-center w-24">Action</th>
+                </tr>
+              </thead>
+              <tbody id="requestTableBody" class="divide-y divide-hairline">
+                <!-- 動態注入 10 筆委託資料 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- 底部期刊版權欄 -->
+  <footer class="mt-auto border-t border-hairline py-6 text-center text-[10px] font-mono tracking-widest text-charcoal/50 uppercase">
+    Live Archive // Japanese Editorial & Catalog Template // 10 Records Sandbox
+  </footer>
+
+  <!-- 1. 新增 / 編輯彈窗 Modal -->
+  <div id="modal" class="fixed inset-0 bg-ink/40 backdrop-blur-[2px] z-50 p-4 overflow-y-auto" style="display: none;">
+    <div class="min-h-full flex items-center justify-center">
+      <div class="bg-surface border border-hairline w-full max-w-xl shadow-2xl p-6 sm:p-8 my-8">
+        
+        <div class="flex items-baseline justify-between border-b border-hairline pb-3 mb-5">
+          <div>
+            <span class="text-[10px] font-mono tracking-[0.2em] text-accent uppercase block">Catalog Entry</span>
+            <h3 id="modalTitle" class="text-base font-bold text-ink tracking-wide">新增項目至目錄</h3>
+          </div>
+          <button type="button" onclick="closeModal()" class="text-charcoal hover:text-ink text-sm p-1">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form id="recordForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+          <input type="hidden" id="m_action" value="add" />
+          <input type="hidden" id="m_rowId" value="" />
+
+          <div>
+            <label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Target Directory / 目標分頁 *</label>
+            <select id="m_sheetName" class="w-full editorial-input p-2 text-xs bg-white text-ink">
+              <option value="委託代搶成功的票">委託代搶成功的票 (Confirmed Archive)</option>
+              <option value="委託單">委託單 (Pending Requests)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Event Title / 演出或活動名稱 *</label>
+            <input type="text" id="m_title" required class="w-full editorial-input p-2 text-xs bg-white" placeholder="例如：YOASOBI ASIA TOUR 2026-2027" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Date & Time / 場次時間</label>
+              <input type="text" id="m_date" class="w-full editorial-input p-2 text-xs bg-white font-mono" placeholder="2026/10/09 (五) 19:00" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Venue / 演出地點</label>
+              <input type="text" id="m_venue" class="w-full editorial-input p-2 text-xs bg-white" placeholder="臺北大巨蛋" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Platform / 售票系統</label>
+              <select id="m_platform" class="w-full editorial-input p-2 text-xs bg-white text-ink">
+                <!-- JS 動態生成選項 -->
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Seat / 座位或需求</label>
+              <input type="text" id="m_seat" class="w-full editorial-input p-2 text-xs bg-white font-mono" placeholder="L2看台 10排09號" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Price / 票價</label>
+              <input type="text" id="m_price" class="w-full editorial-input p-2 text-xs bg-white font-mono" placeholder="5380" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Owner / 票券主人 *</label>
+              <input type="text" id="m_owner" required class="w-full editorial-input p-2 text-xs bg-white" placeholder="甜甜 / 璇" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Buyer Account / 購票帳號</label>
+              <input type="text" id="m_account" class="w-full editorial-input p-2 text-xs bg-white" placeholder="張小姐" />
+            </div>
+          </div>
+
+          <!-- 取票憑證組件 -->
+          <div class="border-t border-hairline pt-3">
+            <p class="text-[10px] font-mono uppercase tracking-widest text-accent mb-2">Claim Voucher Details / 取票憑證</p>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block text-[10px] font-mono text-charcoal/70 mb-1">Voucher Code (序號)</label>
+                <input type="text" id="m_pickupCode" class="w-full editorial-input p-1.5 text-xs bg-white font-mono" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono text-charcoal/70 mb-1">Pickup No. (號碼)</label>
+                <input type="text" id="m_pickupNo" class="w-full editorial-input p-1.5 text-xs bg-white font-mono" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono text-charcoal/70 mb-1">Phone (電話)</label>
+                <input type="text" id="m_pickupPhone" class="w-full editorial-input p-1.5 text-xs bg-white font-mono" />
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Claim Period / 可取票日</label>
+              <input type="text" id="m_pickupDate" class="w-full editorial-input p-2 text-xs bg-white font-mono" placeholder="2026-10-04 ~ 10-09" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono uppercase tracking-wider text-charcoal mb-1">Editorial Memo / 備註說明</label>
+              <input type="text" id="m_memo" class="w-full editorial-input p-2 text-xs bg-white" placeholder="西4門全家取票、連號等" />
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-hairline">
+            <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-mono text-charcoal hover:text-ink uppercase tracking-widest">
+              Cancel
+            </button>
+            <button type="submit" id="modalSubmitBtn" class="bg-ink hover:bg-black text-white px-5 py-2 text-xs font-mono uppercase tracking-widest transition">
+              Save Record
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 售票系統管理彈窗 -->
+  <div id="platformModal" class="fixed inset-0 bg-ink/40 backdrop-blur-[2px] z-50 p-4 overflow-y-auto" style="display: none;">
+    <div class="min-h-full flex items-center justify-center">
+      <div class="bg-surface border border-hairline w-full max-w-md shadow-2xl p-6 my-8">
+        
+        <div class="flex items-baseline justify-between border-b border-hairline pb-3 mb-4">
+          <div>
+            <span class="text-[10px] font-mono tracking-[0.2em] text-accent uppercase block">Platform Master</span>
+            <h3 class="text-sm font-bold text-ink tracking-wide">管理售票系統</h3>
+          </div>
+          <button type="button" onclick="closePlatformModal()" class="text-charcoal hover:text-ink text-sm p-1">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+          <input type="text" id="newPlatformInput" placeholder="輸入新售票平台 (如: 遠大售票、Ticket Plus)" class="editorial-input flex-1 p-2 text-xs bg-white text-ink" />
+          <button type="button" onclick="addNewPlatform()" class="bg-ink hover:bg-black text-white px-3 py-2 text-xs font-mono tracking-wider uppercase transition shrink-0">
+            + 新增
+          </button>
+        </div>
+
+        <p class="text-[11px] font-mono text-charcoal/60 mb-2 uppercase tracking-wider">Current Platforms:</p>
+        <div id="platformTagList" class="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto p-1 border border-hairline bg-paper/50"></div>
+
+        <div class="flex justify-end pt-4 mt-4 border-t border-hairline">
+          <button type="button" onclick="closePlatformModal()" class="bg-ink text-white px-4 py-1.5 text-xs font-mono uppercase tracking-wider">
+            完成關閉
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 精緻小黑條 Toast 提示 -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-ink text-white px-4 py-2.5 text-xs font-mono tracking-wider shadow-lg transform translate-y-20 opacity-0 transition-all duration-200 z-50 border border-charcoal/40 flex items-center gap-2">
+    <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+    <span id="toastMsg">ACTION CONFIRMED</span>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       1. 預載 10 筆已搶到成功票券 + 10 筆待搶委託單
+       ========================================================================== */
+    const DEFAULT_PLATFORMS = ["拓元", "KKTIX", "寬宏", "IBON", "遠大售票", "Ticket Plus", "年代售票"];
+
+    // 10 筆代搶成功票券資料
+    const TEN_SUCCESS_DATA = [
+      {
+        rowId: 101,
+        seq: 1,
+        title: "BIGBANG 2026-2027 WORLD TOUR <X : COSMOS> IN TAIPEI",
+        date: "2026/10/09 (五) 19:00",
+        venue: "臺北大巨蛋",
+        platform: "拓元",
+        account: "",
+        seat: "L2看台206區 10排09號",
+        price: 2000,
+        owner: "甜甜",
+        pickupCode: "246832",
+        pickupNo: "",
+        pickupPhone: "0911223344",
+        pickupDate: "2026-10-04 09:00 ~ 2026-10-09 21:00",
+        memo: ""
+      },
+      {
+        rowId: 102,
+        seq: 2,
+        title: "BIGBANG 2026-2027 WORLD TOUR <X : COSMOS> IN TAIPEI",
+        date: "2026/10/10 (六) 18:00",
+        venue: "臺北大巨蛋",
+        platform: "拓元",
+        account: "張",
+        seat: "L2看台217區 12排16號",
+        price: 5000,
+        owner: "甜甜",
+        pickupCode: "607990",
+        pickupNo: "",
+        pickupPhone: "0920121734",
+        pickupDate: "",
+        memo: ""
+      },
+      {
+        rowId: 103,
+        seq: 3,
+        title: "Vaundy ASIA ARENA TOUR 2026 'HORD' IN TAIPEI",
+        date: "2026/01/11 (日) 19:00",
+        venue: "新北小巨蛋",
+        platform: "拓元",
+        account: "張",
+        seat: "B區31號",
+        price: 3800,
+        owner: "甜甜",
+        pickupCode: "936916",
+        pickupNo: "",
+        pickupPhone: "",
+        pickupDate: "2026-10-25 09:00 ~ 2026-11-01 22:00",
+        memo: ""
+      },
+      {
+        rowId: 104,
+        seq: 4,
+        title: "F.FOREVER 恆星之演·光年全紀錄巡迴",
+        date: "2026/11/29 (六) 19:00",
+        venue: "臺北大巨蛋",
+        platform: "寬宏",
+        account: "",
+        seat: "L2看台216區 4排02號",
+        price: 3640,
+        owner: "瑄",
+        pickupCode: "9755233221",
+        pickupNo: "0404017",
+        pickupPhone: "",
+        pickupDate: "",
+        memo: "西4門全家取票"
+      },
+      {
+        rowId: 105,
+        seq: 5,
+        title: "MAMAMOO 2026 WORLD TOUR <AWARD> IN TAIPEI",
+        date: "2026/11/29 (日) 15:00",
+        venue: "新北小巨蛋",
+        platform: "IBON",
+        account: "",
+        seat: "黃2E區28排 20-22號",
+        price: 3200,
+        owner: "小美",
+        pickupCode: "2026/11/24 12:00",
+        pickupNo: "",
+        pickupPhone: "",
+        pickupDate: "",
+        memo: "取票號: 020049421"
+      },
+      {
+        rowId: 106,
+        seq: 6,
+        title: "2026 Asia Artist Awards in Kaohsiung (AAA)",
+        date: "2026/12/05 (六) 17:00",
+        venue: "高雄國家體育場",
+        platform: "寬宏",
+        account: "張小姐",
+        seat: "1樓G02區5排 19-22號",
+        price: 12300,
+        owner: "甜甜(芝)/王",
+        pickupCode: "2026/11/30(一)",
+        pickupNo: "",
+        pickupPhone: "",
+        pickupDate: "",
+        memo: "4張連號"
+      },
+      {
+        rowId: 107,
+        seq: 7,
+        title: "0X213 熱狗二十一歲生日會",
+        date: "2026/12/12 (六) 19:00",
+        venue: "台北流行音樂中心",
+        platform: "KKTIX",
+        account: "張小姐",
+        seat: "2樓2C區 14排12號",
+        price: 5100,
+        owner: "甜甜",
+        pickupCode: "取票前7天全家取",
+        pickupNo: "0100494",
+        pickupPhone: "張小姐",
+        pickupDate: "",
+        memo: ""
+      },
+      {
+        rowId: 108,
+        seq: 8,
+        title: "ON FIRE DAY 2026 浪人祭 亞熱帶巡演",
+        date: "2026/12/12 (六) 19:00",
+        venue: "宜蘭烏石港 浪",
+        platform: "KKTIX",
+        account: "張小姐",
+        seat: "海洋單日票 11-16號",
+        price: 9000,
+        owner: "璇",
+        pickupCode: "取票前7天全家取",
+        pickupNo: "0104454",
+        pickupPhone: "全家取",
+        pickupDate: "",
+        memo: ""
+      },
+      {
+        rowId: 109,
+        seq: 9,
+        title: "BOYNEXTDOOR TOUR 'KNOCK ON Vol.2' IN TAIPEI",
+        date: "2027/01/08 (五) 18:00",
+        venue: "國立體育大學校",
+        platform: "拓元",
+        account: "張小姐",
+        seat: "VIP B區 000758號",
+        price: 6800,
+        owner: "甜甜",
+        pickupCode: "2027/01/03(日)",
+        pickupNo: "",
+        pickupPhone: "",
+        pickupDate: "",
+        memo: "Soundcheck 權益含"
+      },
+      {
+        rowId: 110,
+        seq: 10,
+        title: "YOASOBI ASIA TOUR 2026-2027 'SUPER PLANET' IN TAIPEI",
+        date: "2027/01/16 (六) 18:00",
+        venue: "臺北大巨蛋",
+        platform: "拓元",
+        account: "",
+        seat: "B2特11區 07排01號",
+        price: 5380,
+        owner: "樂樂 (宗文)",
+        pickupCode: "829575",
+        pickupNo: "",
+        pickupPhone: "0911224858",
+        pickupDate: "2027-01-09 09:00 ~ 2027-01-16 22:00",
+        memo: "開場前一小時取票"
+      }
+    ];
+
+    // 10 筆待搶委託單資料
+    const TEN_REQUEST_DATA = [
+      {
+        rowId: 201,
+        seq: 1,
+        title: "林宥嘉 idol 2026 世界巡迴演唱會 台北站",
+        date: "2026/11/14 (六) 19:30",
+        venue: "台北小巨蛋",
+        platform: "拓元",
+        seatDemand: "只求入場 (黃2C/黃2D看台優先)",
+        budget: "票面價 + 1000",
+        requester: "KK",
+        memo: "連號2張，若只有特區亦可"
+      },
+      {
+        rowId: 202,
+        seq: 2,
+        title: "King Gnu Asia Tour 2026 'THE GREATEST UNKNOWN'",
+        date: "2026/12/20 (日) 18:00",
+        venue: "臺北大巨蛋",
+        platform: "拓元",
+        seatDemand: "B1搖滾站席 前500號",
+        budget: "票面價 4800 (代搶費另計)",
+        requester: "阿豪",
+        memo: "只搶週日場"
+      },
+      {
+        rowId: 203,
+        seq: 3,
+        title: "RADWIMPS WORLD TOUR 2026 in Taipei",
+        date: "2026/10/24 (六) 19:00",
+        venue: "台北流行音樂中心",
+        platform: "KKTIX",
+        seatDemand: "1樓特區或2樓前排",
+        budget: "預算 4200 內/張",
+        requester: "佳佳",
+        memo: "連號2張，需要刷卡代付"
+      },
+      {
+        rowId: 204,
+        seq: 4,
+        title: "Official鬍子男dism Arena Tour 台北場",
+        date: "2026/12/06 (日) 18:00",
+        venue: "台北小巨蛋",
+        platform: "寬宏",
+        seatDemand: "看台二樓前三排",
+        budget: "原價 + 800 代搶費",
+        requester: "怡君",
+        memo: "只要實名制能改名就接"
+      },
+      {
+        rowId: 205,
+        seq: 5,
+        title: "Aimyon 愛繆 巡迴演唱會 2026 台灣站",
+        date: "2027/02/27 (六) 19:30",
+        venue: "新北小巨蛋",
+        platform: "拓元",
+        seatDemand: "任意看台座位皆可",
+        budget: "預算 3800 內",
+        requester: "小陳",
+        memo: "單人票一張即可"
+      },
+      {
+        rowId: 206,
+        seq: 6,
+        title: "Ado SPECIAL LIVE 2026 '心臟' 巡演高雄站",
+        date: "2027/03/13 (六) 18:00",
+        venue: "高雄巨蛋",
+        platform: "遠大售票",
+        seatDemand: "1樓特A區或特B區連號",
+        budget: "預算 5800 / 張",
+        requester: "柏翰",
+        memo: "需要遠大售票實名會員"
+      },
+      {
+        rowId: 207,
+        seq: 7,
+        title: "落日飛車 Sunset Rollercoaster 專場",
+        date: "2026/11/07 (六) 20:00",
+        venue: "Zepp New Taipei",
+        platform: "KKTIX",
+        seatDemand: "1樓站席 序號前 200 號",
+        budget: "原價 + 500",
+        requester: "璇",
+        memo: "一人入場"
+      },
+      {
+        rowId: 208,
+        seq: 8,
+        title: "宇多田光 SCIENCE FICTION TOUR 2026-2027",
+        date: "2027/01/23 (六) 19:00",
+        venue: "臺北大巨蛋",
+        platform: "拓元",
+        seatDemand: "特區任意位或看台第1排",
+        budget: "6500 (頂級預算)",
+        requester: "甜甜",
+        memo: "登記抽票制 + 搶票雙管齊下"
+      },
+      {
+        rowId: 209,
+        seq: 9,
+        title: "五月天 諾亞方舟跨年演唱會 2027",
+        date: "2026/12/31 (四) 21:00",
+        venue: "臺中洲際棒球場",
+        platform: "拓元",
+        seatDemand: "跨年夜 搖滾漫遊區 2張",
+        budget: "3880 連號",
+        requester: "宗文",
+        memo: "跨年倒數場次優先"
+      },
+      {
+        rowId: 210,
+        seq: 10,
+        title: "草東沒有派對 專場巡演 台北站",
+        date: "2026/11/20 (五) 20:00",
+        venue: "Legacy Taipei",
+        platform: "KKTIX",
+        seatDemand: "站席 2張",
+        budget: "原價 + 1200 / 張",
+        requester: "大毛",
+        memo: "秒殺場次，請準時 00 秒開搶"
+      }
+    ];
+
+    /* ==========================================================================
+       2. 狀態管理器（使用 V10 版本號，避免舊瀏覽器 LocalStorage 快取干擾）
+       ========================================================================== */
+    const STORAGE_KEY_SUCCESS = 'LIVE_ARCHIVE_SUCCESS_V10';
+    const STORAGE_KEY_REQUEST = 'LIVE_ARCHIVE_REQUEST_V10';
+    const STORAGE_KEY_PLATFORMS = 'LIVE_ARCHIVE_PLATFORMS_V10';
+
+    let rawData = { successData: [], requestData: [] };
+    let platforms = [];
+    let currentTab = 'successTab';
+
+    function initData() {
+      const storedPlatforms = localStorage.getItem(STORAGE_KEY_PLATFORMS);
+      platforms = storedPlatforms ? JSON.parse(storedPlatforms) : [...DEFAULT_PLATFORMS];
+
+      const storedSuccess = localStorage.getItem(STORAGE_KEY_SUCCESS);
+      const storedRequest = localStorage.getItem(STORAGE_KEY_REQUEST);
+
+      rawData.successData = storedSuccess ? JSON.parse(storedSuccess) : JSON.parse(JSON.stringify(TEN_SUCCESS_DATA));
+      rawData.requestData = storedRequest ? JSON.parse(storedRequest) : JSON.parse(JSON.stringify(TEN_REQUEST_DATA));
+
+      saveAll();
+      refreshPlatformUI();
+      renderAll();
+    }
+
+    function saveAll() {
+      localStorage.setItem(STORAGE_KEY_PLATFORMS, JSON.stringify(platforms));
+      localStorage.setItem(STORAGE_KEY_SUCCESS, JSON.stringify(rawData.successData));
+      localStorage.setItem(STORAGE_KEY_REQUEST, JSON.stringify(rawData.requestData));
+    }
+
+    function resetToInitialData() {
+      if (!confirm("確定要重設為預設的 10 筆真實測試資料嗎？")) return;
+      rawData.successData = JSON.parse(JSON.stringify(TEN_SUCCESS_DATA));
+      rawData.requestData = JSON.parse(JSON.stringify(TEN_REQUEST_DATA));
+      platforms = [...DEFAULT_PLATFORMS];
+      saveAll();
+      refreshPlatformUI();
+      renderAll();
+      showToast("RESET TO 10 RECORDS");
+    }
+
+    /* ==========================================================================
+       3. 平台動態管理
+       ========================================================================== */
+    function refreshPlatformUI() {
+      const filterSelect = document.getElementById('platformFilter');
+      const currentSelected = filterSelect.value;
+      filterSelect.innerHTML = `<option value="">全部售票系統 (ALL)</option>` + 
+        platforms.map(p => `<option value="${p}">${p}</option>`).join('');
+      filterSelect.value = currentSelected;
+
+      const modalSelect = document.getElementById('m_platform');
+      modalSelect.innerHTML = platforms.map(p => `<option value="${p}">${p}</option>`).join('') +
+        `<option value="__ADD_NEW__">+ 自訂新增平台...</option>`;
+
+      const tagList = document.getElementById('platformTagList');
+      tagList.innerHTML = platforms.map(p => `
+        <span class="inline-flex items-center gap-1.5 px-2 py-1 bg-white border border-hairline text-xs font-mono text-ink">
+          <span>${p}</span>
+          <button type="button" onclick="removePlatform('${p}')" class="text-charcoal/40 hover:text-accent ml-1" title="移除此平台">
+            <i class="fa-solid fa-xmark text-[10px]"></i>
+          </button>
+        </span>
+      `).join('');
+    }
+
+    function addNewPlatform() {
+      const input = document.getElementById('newPlatformInput');
+      const val = input.value.trim();
+      if (!val) return;
+      if (!platforms.includes(val)) {
+        platforms.push(val);
+        saveAll();
+        refreshPlatformUI();
+        input.value = '';
+        showToast(`ADDED PLATFORM: ${val}`);
+      } else {
+        alert("該售票平台已存在");
+      }
+    }
+
+    function removePlatform(name) {
+      if (!confirm(`確定要刪除「${name}」平台標籤嗎？`)) return;
+      platforms = platforms.filter(p => p !== name);
+      saveAll();
+      refreshPlatformUI();
+      applyFilters();
+      showToast(`REMOVED PLATFORM: ${name}`);
+    }
+
+    document.getElementById('m_platform').addEventListener('change', function() {
+      if (this.value === '__ADD_NEW__') {
+        const customName = prompt("請輸入新售票系統名稱 (例如: 遠大售票、Ticket Plus):");
+        if (customName && customName.trim()) {
+          const name = customName.trim();
+          if (!platforms.includes(name)) {
+            platforms.push(name);
+            saveAll();
+            refreshPlatformUI();
+          }
+          this.value = name;
+        } else {
+          this.value = platforms[0] || '';
+        }
+      }
+    });
+
+    /* ==========================================================================
+       4. 複製與 Toast 提示工具
+       ========================================================================== */
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2500);
+    }
+
+    function copyVal(val, label) {
+      if (!val) return;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(val)
+          .then(() => showToast(`COPIED: ${val}`))
+          .catch(() => fallbackCopy(val));
+      } else {
+        fallbackCopy(val);
+      }
+    }
+
+    function fallbackCopy(val) {
+      const ta = document.createElement("textarea");
+      ta.value = val;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(`COPIED: ${val}`);
+      } catch (err) {
+        showToast(`複製內容: ${val}`);
+      }
+      document.body.removeChild(ta);
+    }
+
+    /* ==========================================================================
+       5. 渲染與多維度查詢
+       ========================================================================== */
+    function renderAll() {
+      document.getElementById('badge-success').innerText = rawData.successData.length;
+      document.getElementById('badge-request').innerText = rawData.requestData.length;
+      
+      document.getElementById('stat-count').innerText = rawData.successData.length;
+      const total = rawData.successData.reduce((acc, cur) => acc + (Number(cur.price) || 0), 0);
+      document.getElementById('stat-amount').innerText = '$' + total.toLocaleString();
+
+      const owners = new Set(rawData.successData.map(i => i.owner).filter(Boolean));
+      document.getElementById('stat-owners').innerText = owners.size;
+
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const kw = document.getElementById('searchInput').value.trim().toLowerCase();
+      const platform = document.getElementById('platformFilter').value;
+
+      const filterItem = (item) => {
+        const matchesKw = !kw || 
+          (item.title && item.title.toLowerCase().includes(kw)) ||
+          (item.owner && item.owner.toLowerCase().includes(kw)) ||
+          (item.requester && item.requester.toLowerCase().includes(kw)) ||
+          (item.venue && item.venue.toLowerCase().includes(kw)) ||
+          (item.pickupCode && item.pickupCode.toLowerCase().includes(kw)) ||
+          (item.pickupPhone && item.pickupPhone.toLowerCase().includes(kw)) ||
+          (item.memo && item.memo.toLowerCase().includes(kw));
+        const matchesPlatform = !platform || (item.platform === platform);
+        return matchesKw && matchesPlatform;
+      };
+
+      renderSuccessTable(rawData.successData.filter(filterItem));
+      renderRequestTable(rawData.requestData.filter(filterItem));
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('platformFilter').value = '';
+      applyFilters();
+    }
+
+    function renderSuccessTable(data) {
+      const tbody = document.getElementById('successTableBody');
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" class="text-center py-12 text-charcoal/50 font-mono text-xs">NO ENTRIES FOUND IN ARCHIVE</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.map((item, idx) => {
+        const paddedIndex = String(idx + 1).padStart(2, '0');
+        return `
+          <tr class="hover:bg-paper/40 transition">
+            <td class="py-3 px-4 text-center font-mono text-[11px] text-charcoal/50">${paddedIndex}</td>
+            <td class="py-3 px-4 font-semibold text-ink">
+              <div class="line-clamp-2">${item.title}</div>
+              ${item.account ? `<span class="text-[10px] font-mono text-charcoal/60">ACC: ${item.account}</span>` : ''}
+            </td>
+            <td class="py-3 px-4 font-mono text-[11px] text-charcoal/80">${item.date || '—'}</td>
+            <td class="py-3 px-4 text-charcoal">
+              <div>${item.venue || '—'}</div>
+              <span class="inline-block mt-0.5 text-[10px] font-mono border border-hairline px-1.5 py-0.2 text-charcoal/80 bg-paper">
+                ${item.platform || 'OTHER'}
+              </span>
+            </td>
+            <td class="py-3 px-4 font-mono text-ink font-medium">${item.seat || '—'}</td>
+            <td class="py-3 px-4 text-right font-mono text-ink font-semibold">
+              ${item.price ? '$' + Number(item.price).toLocaleString() : '—'}
+            </td>
+            <td class="py-3 px-4 text-center">
+              <span class="inline-block text-[11px] font-medium border-b border-accent text-accent px-1">
+                ${item.owner}
+              </span>
+            </td>
+            <td class="py-3 px-4 font-mono text-[11px]">
+              ${item.pickupCode ? `
+                <div class="flex items-center gap-1.5 text-ink">
+                  <span class="bg-paper border border-hairline px-1.5 py-0.5 select-all">${item.pickupCode}</span>
+                  <button type="button" onclick="copyVal('${item.pickupCode}', '取票碼')" class="text-charcoal/50 hover:text-ink p-1" title="複製序號">
+                    <i class="fa-regular fa-copy text-[10px]"></i>
+                  </button>
+                </div>` : ''}
+              ${item.pickupPhone ? `<div class="text-[10px] text-charcoal/60 mt-0.5">TEL: ${item.pickupPhone}</div>` : ''}
+            </td>
+            <td class="py-3 px-4 font-mono text-[10px] text-charcoal/70">${item.pickupDate || '—'}</td>
+            <td class="py-3 px-4 text-charcoal/70 text-[11px]">${item.memo || '—'}</td>
+            <td class="py-3 px-4 text-center font-mono text-[11px] space-x-2">
+              <button type="button" onclick="openEditModal('委託代搶成功的票', ${item.rowId})" class="text-charcoal/60 hover:text-ink underline underline-offset-2">EDIT</button>
+              <button type="button" onclick="confirmDelete('委託代搶成功的票', ${item.rowId})" class="text-charcoal/40 hover:text-accent underline underline-offset-2">DEL</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderRequestTable(data) {
+      const tbody = document.getElementById('requestTableBody');
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-12 text-charcoal/50 font-mono text-xs">NO COMMISSION ENTRIES</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.map((item, idx) => {
+        const paddedIndex = String(idx + 1).padStart(2, '0');
+        return `
+          <tr class="hover:bg-paper/40 transition">
+            <td class="py-3 px-4 text-center font-mono text-[11px] text-charcoal/50">${paddedIndex}</td>
+            <td class="py-3 px-4 font-semibold text-ink">${item.title}</td>
+            <td class="py-3 px-4 font-mono text-[11px] text-charcoal/80">${item.date || '—'}</td>
+            <td class="py-3 px-4 text-charcoal">
+              ${item.venue || '—'} / <span class="font-mono text-[10px] text-charcoal/80">[${item.platform || 'OTHER'}]</span>
+            </td>
+            <td class="py-3 px-4 font-mono text-ink">${item.seatDemand || '—'}</td>
+            <td class="py-3 px-4 text-right font-mono text-ink font-semibold">${item.budget || '—'}</td>
+            <td class="py-3 px-4 text-center">
+              <span class="inline-block text-[11px] border-b border-charcoal/40 text-ink px-1">${item.requester}</span>
+            </td>
+            <td class="py-3 px-4 text-charcoal/70 text-[11px]">${item.memo || '—'}</td>
+            <td class="py-3 px-4 text-center font-mono text-[11px] space-x-2">
+              <button type="button" onclick="openEditModal('委託單', ${item.rowId})" class="text-charcoal/60 hover:text-ink underline underline-offset-2">EDIT</button>
+              <button type="button" onclick="confirmDelete('委託單', ${item.rowId})" class="text-charcoal/40 hover:text-accent underline underline-offset-2">DEL</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.getElementById('successTab').classList.toggle('hidden', tabId !== 'successTab');
+      document.getElementById('requestTab').classList.toggle('hidden', tabId !== 'requestTab');
+
+      const btnSuccess = document.getElementById('tabBtn-successTab');
+      const btnRequest = document.getElementById('tabBtn-requestTab');
+
+      if (tabId === 'successTab') {
+        btnSuccess.className = 'py-2.5 px-4 border-b-2 border-ink text-ink font-bold transition flex items-center gap-2';
+        btnRequest.className = 'py-2.5 px-4 border-b-2 border-transparent text-charcoal/60 hover:text-ink transition flex items-center gap-2';
+      } else {
+        btnRequest.className = 'py-2.5 px-4 border-b-2 border-ink text-ink font-bold transition flex items-center gap-2';
+        btnSuccess.className = 'py-2.5 px-4 border-b-2 border-transparent text-charcoal/60 hover:text-ink transition flex items-center gap-2';
+      }
+    }
+
+    /* ==========================================================================
+       6. 彈窗與事件處理
+       ========================================================================== */
+    function openModal(mode = 'add') {
+      document.getElementById('recordForm').reset();
+      document.getElementById('m_action').value = 'add';
+      document.getElementById('m_rowId').value = '';
+      document.getElementById('modalTitle').innerText = '新增項目至目錄';
+      document.getElementById('m_sheetName').disabled = false;
+      document.getElementById('m_sheetName').value = currentTab === 'successTab' ? '委託代搶成功的票' : '委託單';
+      document.getElementById('modal').style.display = 'block';
+    }
+
+    function openEditModal(sheetName, rowId) {
+      const source = sheetName === '委託代搶成功的票' ? rawData.successData : rawData.requestData;
+      const item = source.find(x => Number(x.rowId) === Number(rowId));
+      if (!item) return;
+
+      document.getElementById('m_action').value = 'edit';
+      document.getElementById('m_rowId').value = rowId;
+      document.getElementById('modalTitle').innerText = `編輯項目 (序號 ${item.seq || rowId})`;
+
+      const selSheet = document.getElementById('m_sheetName');
+      selSheet.value = sheetName;
+      selSheet.disabled = true;
+
+      document.getElementById('m_title').value = item.title || '';
+      document.getElementById('m_date').value = item.date || '';
+      document.getElementById('m_venue').value = item.venue || '';
+      
+      if (item.platform && !platforms.includes(item.platform)) {
+        platforms.push(item.platform);
+        saveAll();
+        refreshPlatformUI();
+      }
+      document.getElementById('m_platform').value = item.platform || platforms[0] || '';
+      
+      document.getElementById('m_seat').value = item.seat || item.seatDemand || '';
+      document.getElementById('m_price').value = item.price || item.budget || '';
+      document.getElementById('m_owner').value = item.owner || item.requester || '';
+      document.getElementById('m_account').value = item.account || '';
+      document.getElementById('m_pickupCode').value = item.pickupCode || '';
+      document.getElementById('m_pickupNo').value = item.pickupNo || '';
+      document.getElementById('m_pickupPhone').value = item.pickupPhone || '';
+      document.getElementById('m_pickupDate').value = item.pickupDate || '';
+      document.getElementById('m_memo').value = item.memo || '';
+
+      document.getElementById('modal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    function openPlatformModal() {
+      document.getElementById('platformModal').style.display = 'block';
+    }
+
+    function closePlatformModal() {
+      document.getElementById('platformModal').style.display = 'none';
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const action = document.getElementById('m_action').value;
+      const sheetName = document.getElementById('m_sheetName').value;
+      const rowId = document.getElementById('m_rowId').value;
+
+      const itemData = {
+        title: document.getElementById('m_title').value,
+        date: document.getElementById('m_date').value,
+        venue: document.getElementById('m_venue').value,
+        platform: document.getElementById('m_platform').value,
+        seat: document.getElementById('m_seat').value,
+        seatDemand: document.getElementById('m_seat').value,
+        price: document.getElementById('m_price').value,
+        budget: document.getElementById('m_price').value,
+        owner: document.getElementById('m_owner').value,
+        requester: document.getElementById('m_owner').value,
+        account: document.getElementById('m_account').value,
+        pickupCode: document.getElementById('m_pickupCode').value,
+        pickupNo: document.getElementById('m_pickupNo').value,
+        pickupPhone: document.getElementById('m_pickupPhone').value,
+        pickupDate: document.getElementById('m_pickupDate').value,
+        memo: document.getElementById('m_memo').value
+      };
+
+      if (action === 'add') {
+        const targetList = sheetName === '委託代搶成功的票' ? rawData.successData : rawData.requestData;
+        itemData.rowId = Date.now();
+        itemData.seq = targetList.length + 1;
+        targetList.unshift(itemData);
+        showToast('RECORD ADDED');
+      } else {
+        const targetList = sheetName === '委託代搶成功的票' ? rawData.successData : rawData.requestData;
+        const index = targetList.findIndex(x => Number(x.rowId) === Number(rowId));
+        if (index !== -1) {
+          targetList[index] = { ...targetList[index], ...itemData };
+          showToast('RECORD UPDATED');
+        }
+      }
+
+      saveAll();
+      closeModal();
+      renderAll();
+    }
+
+    function confirmDelete(sheetName, rowId) {
+      if (!confirm(`確定要自「${sheetName}」移除此筆測試項目？`)) return;
+      if (sheetName === '委託代搶成功的票') {
+        rawData.successData = rawData.successData.filter(x => Number(x.rowId) !== Number(rowId));
+      } else {
+        rawData.requestData = rawData.requestData.filter(x => Number(x.rowId) !== Number(rowId));
+      }
+      saveAll();
+      renderAll();
+      showToast('ENTRY DELETED');
+    }
+
+    window.addEventListener('DOMContentLoaded', initData);
+  </script>
 </body>
 </html>
